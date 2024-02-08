@@ -1,0 +1,153 @@
+
+!
+! Last configuration change at 20:13:15 UTC Thu Feb 8 2024
+!
+upgrade fpd auto
+version 15.0
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname EdgeRT01
+!
+boot-start-marker
+boot-end-marker
+!
+enable password 7 05080F1C2243
+!
+no aaa new-model
+!
+!
+!
+clock timezone UTC 3
+ip source-route
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.local
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+username admin password 7 02050D480809
+!
+redundancy
+!
+!
+ip ssh version 2
+! 
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 10.2.3.1 255.255.255.0
+ !
+!
+interface FastEthernet0/0
+ description EdgeRT01 -> ASA01
+ ip address 10.1.1.2 255.255.255.252
+ duplex full
+ !
+!
+interface FastEthernet1/0
+ description EdgeRT01 -> ASA02
+ ip address 10.1.1.14 255.255.255.252
+ duplex full
+ !
+!
+interface FastEthernet2/0
+ description EdgeRT01 -> CoreSW02
+ ip address 10.1.1.25 255.255.255.252
+ duplex full
+ !
+!
+interface FastEthernet3/0
+ description EdgeRT01 -> CoreSW01
+ ip address 10.1.1.17 255.255.255.252
+ duplex full
+ !
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex half
+ !
+!
+router ospf 1
+ router-id 3.3.3.3
+ log-adjacency-changes
+ passive-interface default
+ no passive-interface FastEthernet0/0
+ no passive-interface FastEthernet1/0
+ no passive-interface FastEthernet2/0
+ no passive-interface FastEthernet3/0
+ network 10.1.1.0 0.0.0.127 area 0
+ network 10.2.3.0 0.0.0.255 area 0
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+!
+kron occurrence CONFIG_BACKUP_AUTO at 14:30 recurring
+ policy-list CONFIG_BACKUP
+!
+kron policy-list CONFIG_BACKUP
+ cli wr mem
+ cli copy running-config ftp://172.16.1.10/
+!
+!
+!
+!
+!
+!
+!
+control-plane
+ !
+!
+!
+mgcp fax t38 ecm
+mgcp behavior g729-variants static-pt
+!
+!
+!
+gatekeeper
+ shutdown
+!
+alias exec crc copy running-config ftp://172.16.1.10/
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+line vty 5 1869
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+!
+ntp server 172.16.1.5 version 2
+end

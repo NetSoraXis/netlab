@@ -1,0 +1,168 @@
+
+!
+! No configuration change since last restart
+! NVRAM config last updated at 17:09:44 UTC Thu Feb 8 2024
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname AccSW01
+!
+boot-start-marker
+boot-end-marker
+!
+enable password 7 060506324F41
+!
+no aaa new-model
+memory-size iomem 5
+ip cef
+!
+!
+!
+!
+ip domain name lab.local
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+username admin password 7 02050D480809
+archive
+ log config
+  hidekeys
+! 
+!
+!
+!
+ip ssh version 2
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/1
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/2
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/3
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/4
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/5
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/6
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/7
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/8
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/9
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/10
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/11
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/12
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/13
+ description Net_192.168.1.0/26
+ switchport access vlan 50
+!
+interface FastEthernet1/14
+ description AccSW01 -> DistrSW01/02
+ switchport trunk allowed vlan 1,2,10,50,1002-1005
+ switchport mode trunk
+!
+interface FastEthernet1/15
+ description AccSW01 -> DistrSW01/02
+ switchport trunk allowed vlan 1,2,10,50,1002-1005
+ switchport mode trunk
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan10
+ description Management
+ ip address 10.10.10.4 255.255.255.240
+!
+ip forward-protocol nd
+ip route 172.16.1.0 255.255.255.240 10.10.10.1
+ip route 172.16.1.0 255.255.255.240 10.10.10.2
+ip route 172.16.1.0 255.255.255.240 10.10.10.3
+!
+!
+no ip http server
+no ip http secure-server
+!
+kron occurrence CONFIG_BACKUP_AUTO at 14:30 recurring
+ policy-list CONFIG_BACKUP
+!
+!
+!
+!
+!
+control-plane
+!
+alias exec crc copy running-config ftp://172.16.1.10/
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+line vty 5 903
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+!
+ntp server 172.16.1.5 version 2
+!
+end

@@ -1,0 +1,187 @@
+
+!
+! No configuration change since last restart
+! NVRAM config last updated at 17:09:44 UTC Thu Feb 8 2024
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname CoreSW02
+!
+boot-start-marker
+boot-end-marker
+!
+enable password 7 00071A150754
+!
+no aaa new-model
+memory-size iomem 5
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.local
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+username admin password 7 02050D480809
+archive
+ log config
+  hidekeys
+! 
+!
+!
+vlan internal allocation policy ascending
+!
+ip ssh version 2
+!
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 10.2.6.1 255.255.255.0
+!
+interface Port-channel1
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ description CoreSW02 -> EdgeRT02
+ no switchport
+ ip address 10.1.1.22 255.255.255.252
+ duplex full
+ speed 100
+!
+interface FastEthernet1/1
+ description CoreSW02 -> DistrSW02
+ no switchport
+ ip address 10.1.1.37 255.255.255.252
+ duplex full
+ speed 100
+!
+interface FastEthernet1/2
+ description CoreSW02 -> EdgeRT01
+ no switchport
+ ip address 10.1.1.26 255.255.255.252
+ duplex full
+ speed 100
+!
+interface FastEthernet1/3
+ description CoreSW02 -> DistrSW01
+ no switchport
+ ip address 10.1.1.45 255.255.255.252
+ duplex full
+ speed 100
+!
+interface FastEthernet1/4
+ description CoreSW02 -> FarmDistrSW01
+ no switchport
+ ip address 10.1.1.57 255.255.255.252
+!
+interface FastEthernet1/5
+ description CoreSW02 -> FarmDistrSW02
+ no switchport
+ ip address 10.1.1.61 255.255.255.252
+!
+interface FastEthernet1/6
+ shutdown
+!
+interface FastEthernet1/7
+ shutdown
+!
+interface FastEthernet1/8
+ shutdown
+!
+interface FastEthernet1/9
+ shutdown
+!
+interface FastEthernet1/10
+ shutdown
+!
+interface FastEthernet1/11
+ shutdown
+!
+interface FastEthernet1/12
+ shutdown
+!
+interface FastEthernet1/13
+ shutdown
+!
+interface FastEthernet1/14
+ description CoreSW02 -> CoreSW01
+ channel-group 1 mode on
+!
+interface FastEthernet1/15
+ description CoreSW02 -> CoreSW01
+ channel-group 1 mode on
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ router-id 6.6.6.6
+ log-adjacency-changes
+ passive-interface default
+ no passive-interface FastEthernet1/0
+ no passive-interface FastEthernet1/1
+ no passive-interface FastEthernet1/2
+ no passive-interface FastEthernet1/3
+ no passive-interface FastEthernet1/4
+ no passive-interface FastEthernet1/5
+ no passive-interface FastEthernet1/14
+ no passive-interface FastEthernet1/15
+ network 10.1.1.0 0.0.0.127 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+kron occurrence CONFIG_BACKUP_AUTO at 14:30 recurring
+ policy-list CONFIG_BACKUP
+!
+!
+!
+!
+!
+control-plane
+!
+alias exec crc copy running-config ftp://172.16.1.10/
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+line vty 5 903
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+!
+ntp server 172.16.1.5 version 2
+!
+end

@@ -1,0 +1,130 @@
+
+!
+! No configuration change since last restart
+! NVRAM config last updated at 17:09:39 UTC Thu Feb 8 2024
+!
+upgrade fpd auto
+version 15.0
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname NTPServer
+!
+boot-start-marker
+boot-end-marker
+!
+enable password 7 02050D480809
+!
+no aaa new-model
+!
+!
+!
+ip source-route
+ip cef
+!
+!
+!
+!
+ip domain name lab.local
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+username admin password 7 01100F175804
+!
+redundancy
+!
+!
+ip ssh version 2
+! 
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 172.16.1.5 255.255.255.255
+ !
+!
+interface FastEthernet0/0
+ ip address 10.1.1.66 255.255.255.252
+ duplex full
+ !
+!
+interface FastEthernet1/0
+ ip address 10.1.1.70 255.255.255.252
+ duplex full
+ !
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+ip route 10.1.1.0 255.255.255.128 10.1.1.65
+ip route 10.1.1.0 255.255.255.128 10.1.1.69
+ip route 10.10.10.0 255.255.255.240 10.1.1.65
+ip route 10.10.10.0 255.255.255.240 10.1.1.69
+ip route 172.16.1.10 255.255.255.255 10.1.1.65
+ip route 172.16.1.10 255.255.255.255 10.1.1.69
+!
+kron occurrence CONFIG_BACKUP_AUTO at 14:30 recurring
+ policy-list CONFIG_BACKUP
+!
+kron policy-list CONFIG_BACKUP
+ cli wr mem
+ cli copy running-config ftp://172.16.1.10/
+!
+!
+!
+!
+!
+!
+!
+control-plane
+ !
+!
+!
+mgcp fax t38 ecm
+mgcp behavior g729-variants static-pt
+!
+!
+!
+gatekeeper
+ shutdown
+!
+alias exec crc copy running-config ftp://172.16.1.10/
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+line vty 5 903
+ exec-timeout 0 0
+ logging synchronous
+ login local
+ transport input ssh
+line vty 904 1869
+ exec-timeout 0 0
+ logging synchronous
+ login
+!
+ntp master
+end
